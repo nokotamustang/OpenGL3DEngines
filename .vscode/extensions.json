@@ -1,0 +1,22 @@
+{
+    "recommendations": [
+        "aaron-bond.better-comments",
+        "akamud.vscode-theme-onedark",
+        "andischerer.theme-atom-one-dark",
+        "anseki.vscode-color",
+        "davidanson.vscode-markdownlint",
+        "esbenp.prettier-vscode",
+        "jeferwang.vscode-setting-export",
+        "jeylanib.pinescript",
+        "mechatroner.rainbow-csv",
+        "ms-python.autopep8",
+        "ms-python.debugpy",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-vscode.atom-keybindings",
+        "nextbook.file-and-folder-icons",
+        "sleistner.vscode-fileutils",
+        "slevesque.shader",
+        "streetsidesoftware.code-spell-checker"
+    ]
+}
