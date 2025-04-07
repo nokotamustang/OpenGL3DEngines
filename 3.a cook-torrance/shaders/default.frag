@@ -74,9 +74,9 @@ vec3 calculateCookTorrance(vec3 N, vec3 V, Light light, vec3 F0) {
   float attenuation = 1.0;
   // float attenuation = 1.0 / (distance * distance);
   vec3 radiance = light.color * attenuation;
-  // Calculate normal distribution for specular BRDF.
+  // Calculate normal distribution for specular brdf.
   float NDF = DistributionGGX(N, H, material.Kr);
-  // Calculate geometric attenuation for specular BRDF.
+  // Calculate geometric attenuation for specular brdf.
   float G = GeometrySmith(N, V, L, material.Kr);
   // Calculate Fresnel term for direct lighting. 
   vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
@@ -87,8 +87,8 @@ vec3 calculateCookTorrance(vec3 N, vec3 V, Light light, vec3 F0) {
   // Cook-torrance brdf
   float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
   vec3 specular = numerator / denominator;
-  float NdotL = max(dot(N, L), 0.0);
-  vec3 Lo = (kD * material.Ka / PI + specular) * radiance * NdotL;
+  float n_dot_l = max(dot(N, L), 0.0);
+  vec3 Lo = (kD * material.Ka / PI + specular) * radiance * n_dot_l;
   return Lo * light.strength;
 }
 

@@ -76,8 +76,8 @@ class GraphicsEngine:
         self.cube = Cube(self,  metallic=0.0, roughness=0.0, position=(-cube_space*2, 0, 0), texture="crate_0")
         self.cube2 = Cube(self, metallic=0.0, roughness=0.5, position=(-cube_space, 0, 0), texture="crate_1")
         self.cube3 = Cube(self, metallic=0.0, roughness=0.9, position=(0, 0, 0), texture="crate_2")
-        self.cube4 = Cube(self, metallic=0.7, roughness=0.4, position=(cube_space, 0, 0), texture="crate_3")
-        self.cube5 = Cube(self, metallic=0.9, roughness=0.1, position=(cube_space*2, 0, 0), texture="crate_4")
+        self.cube4 = Cube(self, metallic=0.7, roughness=0.4, position=(cube_space, 0, 0), texture="metal_0")
+        self.cube5 = Cube(self, metallic=0.9, roughness=0.1, position=(cube_space*2, 0, 0), texture="metal_1")
         self.scene.extend([self.cube, self.cube2, self.cube3, self.cube4, self.cube5])
         # Font
         self.font = pygame.font.SysFont('arial', 64)
@@ -127,12 +127,16 @@ class GraphicsEngine:
 
     def run(self):
         while True:
+            self.delta_time = self.clock.tick(self.target_fps)
+            self.raw_delta_time = self.delta_time
             if not self.paused:
-                self.time = pygame.time.get_ticks() * 0.001
+                # self.time = pygame.time.get_ticks() * 0.001
+                self.time = self.time + (self.delta_time * 0.001)
+            else:
+                self.delta_time = 0
             self.check_events()
             self.update()
             self.render()
-            self.delta_time = self.clock.tick(self.target_fps)
             self.fps = self.clock.get_fps()
             # print(f'delta: {self.delta_time:.2f}, fps: {self.fps:.2f}, time: {self.time:.2f}')
 

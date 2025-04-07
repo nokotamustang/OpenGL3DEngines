@@ -95,7 +95,7 @@ float getShadow2() {
 // }
 
 vec3 calculateBlinnPhong(int index, vec3 N, Light light) {
-  // Radience
+  // Radiance
   float distance = length(light.position - fragPos);
   float strength = light.strength * 100.0;
   float attenuation = strength / (distance * distance); // or 1.0;
@@ -107,7 +107,7 @@ vec3 calculateBlinnPhong(int index, vec3 N, Light light) {
   // Ambient
   vec3 ambient = material.Ka;
 
-  // Diffuse
+  // Diffuse (Lambertian)
   vec3 lightDir = normalize(light.position - fragPos);
   float diff = max(dot(N, lightDir), 0.0);
   vec3 diffuse = material.Kd * diff;

@@ -78,13 +78,7 @@ class GraphicsEngine:
         for i in range(-tiles, tiles):
             for j in range(-tiles, tiles):
                 self.scene.append(Floor(self, position=(i*size*2.0, base_h, j*size*2.0), size=(size, 0.1, size)))
-        cube_space = 1.5
-        self.cube = Cube(self,  albedo=(1.0, 1.0, 1.0), position=(-cube_space*2, 0, 0), texture="fur_0")
-        # self.cube2 = Cube(self, albedo=(1.0, 1.0, 1.0), position=(-cube_space, 0, 0), texture="crate_1")
-        # self.cube3 = Cube(self, albedo=(1.0, 1.0, 1.0), position=(0, 0, 0), texture="crate_2")
-        # self.cube4 = Cube(self, albedo=(1.0, 1.0, 1.0), position=(cube_space, 0, 0), texture="crate_3")
-        # self.cube5 = Cube(self, albedo=(1.0, 1.0, 1.0), position=(cube_space*2, 0, 0), texture="crate_4")
-        # self.scene.extend([self.cube, self.cube2, self.cube3, self.cube4, self.cube5])
+        self.cube = Cube(self,  albedo=(1.0, 1.0, 1.0), position=(0, 0, 0), texture="fur_0")
         self.scene.extend([self.cube])
         # Font
         self.font = pygame.font.SysFont('arial', 64)
@@ -154,12 +148,15 @@ class GraphicsEngine:
 
     def run(self):
         while True:
+            self.delta_time = self.clock.tick(self.target_fps)
+            self.raw_delta_time = self.delta_time
             if not self.paused:
                 self.time = pygame.time.get_ticks() * 0.001
+            else:
+                self.delta_time = 0
             self.check_events()
             self.update()
             self.render()
-            self.delta_time = self.clock.tick(self.target_fps)
             self.fps = self.clock.get_fps()
             # print(f'delta: {self.delta_time:.2f}, fps: {self.fps:.2f}, time: {self.time:.2f}')
 

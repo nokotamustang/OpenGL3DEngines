@@ -67,7 +67,7 @@ class Camera:
         self.m_view = self.get_view_matrix()
 
     def move(self):
-        self.velocity = self.speed * self.app.delta_time
+        self.velocity = self.speed * self.app.raw_delta_time
         keys = pygame.key.get_pressed()
         if keys[self.key_bindings["forward"]]:
             self.position += self.forward * self.velocity
@@ -99,6 +99,10 @@ class Light:
 
     def get_view_matrix(self):
         return glm.lookAt(self.position, self.direction, glm.vec3(0, 1, 0))
+
+    def rotate(self, time):
+        self.position = glm.rotateY(self.position, time)
+        self.m_view_light = self.get_view_matrix()
 
 
 class CameraLight:

@@ -137,12 +137,15 @@ class GraphicsEngine:
 
     def run(self):
         while True:
+            self.delta_time = self.clock.tick(self.target_fps)
+            self.raw_delta_time = self.delta_time
             if not self.paused:
                 self.time = pygame.time.get_ticks() * 0.001
+            else:
+                self.delta_time = 0
             self.check_events()
             self.update()
             self.render()
-            self.delta_time = self.clock.tick(self.target_fps)
             self.fps = self.clock.get_fps()
             # print(f'delta: {self.delta_time:.2f}, fps: {self.fps:.2f}, time: {self.time:.2f}')
 

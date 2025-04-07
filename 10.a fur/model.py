@@ -28,7 +28,7 @@ class Cube:
         self.shadow_program = app.shader.get_shader('shadow')
         self.shadow_vao = self.get_shadow_vao()
 
-        self.tex_id = app.texture.get_texture(path=f'textures/{texture}.png')
+        self.tex_id = app.texture.get_texture(path=f'./../textures/{texture}.png')
         self.depth_tex_id = app.shadow.depth_tex_id
         self.m_model = self.position
         self.on_init()

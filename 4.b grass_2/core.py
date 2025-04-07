@@ -67,7 +67,7 @@ class Camera:
         self.m_view = self.get_view_matrix()
 
     def move(self):
-        self.velocity = self.speed * self.app.delta_time
+        self.velocity = self.speed * self.app.raw_delta_time
         keys = pygame.key.get_pressed()
         if keys[self.key_bindings["forward"]]:
             self.position += self.forward * self.velocity
