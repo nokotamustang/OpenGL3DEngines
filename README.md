@@ -149,7 +149,7 @@ I create a simple ground plane from a mathematical function, to form a grid of v
 
 This, mentally, isn't far more complex than the cube example, but we need to understand how to create a large area efficiently and produce the relationship between the vertices and the pairs of triangles forming the ground plane.
 
-## 5.b ground_2 - Ground rendering with a 'height map' image
+## 5.b ground_2 - Height map
 
 Rendering a simple ground plane with a texture and a height map from an image.
 
@@ -169,7 +169,7 @@ The grass is created along each point on the ground plane using a geometry shade
 
 In the case of large scenes, we need to use a 'chunk' system to load and unload parts of the scene as the camera moves around. This is because loading the entire scene into memory at once would be inefficient and slow. More on this later.
 
-## 5.d ground_4 - Ground plus Chunk dynamic loading and generated flora
+## 5.d ground_4 - Chunk dynamic loading and generated flora
 
 <!-- Obviously the ground_3 demo is slow when set with a very large terrain mech, so I've added a chunk system to load and unload parts of the height map as the camera moves around.
 
