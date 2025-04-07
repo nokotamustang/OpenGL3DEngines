@@ -28,54 +28,32 @@ class Cube:
         self.shadow_program = app.shader.get_shader('shadow')
         self.shadow_vao = self.get_shadow_vao()
 
-        self.tex_id = app.texture.get_texture(path=f'textures/{texture}.png')
+        self.tex_id = app.texture.get_texture(path=f'./../textures/{texture}.png')
         self.depth_tex_id = app.shadow.depth_tex_id
+        self.depth_tex_2_id = app.shadow_2.depth_tex_id
         self.m_model = self.position
         self.on_init()
 
     def on_init(self):
         # Set resolution
         # self.shader_program['u_resolution'].write(glm.vec2(self.app.win_size))
-        # n lights
+        # Number of lights
         self.shader_program['num_lights'].value = len(self.app.lights)
-        # Send lights into uniform array of Light struct
-        for i, light in enumerate(self.app.lights):
-            self.shader_program[f'lights[{i}].position'].value = light.position
-            self.shader_program[f'lights[{i}].color'].value = light.color
-            self.shader_program[f'lights[{i}].strength'].value = light.strength
-        self.shader_program['m_view_light'].write(self.app.light.m_view_light)
-        # Position
-        self.shader_program['m_proj'].write(self.app.camera.m_proj)
-        self.shader_program['m_view'].write(self.app.camera.m_view)
-        self.shader_program['m_model'].write(self.m_model)
-        # Material: Albedo (rgb)
-        self.shader_program['material.Ka'].value = self.albedo
-        self.shader_program['material.Kd'].value = self.diffuse
-        self.shader_program['material.Ks'].value = self.specular
-        self.shader_program['material.Kao'].value = self.ao
-        # Shadow depth map
-        self.shader_program['u_shadow_map'] = self.depth_tex_id
-        self.app.texture.textures[self.depth_tex_id].use(location=self.depth_tex_id)
-        # Texture
-        self.shader_program['u_texture_0'] = self.tex_id
-        self.app.texture.textures[self.tex_id].use(location=self.tex_id)
-        # Shadow program
-        self.shadow_program['m_proj'].write(self.app.camera.m_proj)
-        self.shadow_program['m_view_light'].write(self.app.light.m_view_light)
-        self.shadow_program['m_model'].write(self.m_model)
 
     def update(self):
         self.m_model = glm.rotate(self.position, self.app.time, glm.vec3(0, 1, 0))
 
     def render(self):
-        # n lights
-        self.shader_program['num_lights'].value = len(self.app.lights)
         # Send lights into uniform array of Light struct
         for i, light in enumerate(self.app.lights):
             self.shader_program[f'lights[{i}].position'].value = light.position
             self.shader_program[f'lights[{i}].color'].value = light.color
             self.shader_program[f'lights[{i}].strength'].value = light.strength
-        self.shader_program['m_view_light'].write(self.app.light.m_view_light)
+
+        self.shader_program['m_view_light'].write(self.app.global_light.m_view_light)
+        self.shader_program['m_view_light_2'].write(self.app.camera_light.m_view_light)
+        self.shader_program['global_ambient'].value = self.app.global_ambient
+
         # Position
         self.shader_program['m_proj'].write(self.app.camera.m_proj)
         self.shader_program['m_view'].write(self.app.camera.m_view)
@@ -88,6 +66,9 @@ class Cube:
         # Shadow depth map
         self.shader_program['u_shadow_map'] = self.depth_tex_id
         self.app.texture.textures[self.depth_tex_id].use(location=self.depth_tex_id)
+        # Shadow depth map 2
+        self.shader_program['u_shadow_map_2'] = self.depth_tex_2_id
+        self.app.texture.textures[self.depth_tex_2_id].use(location=self.depth_tex_2_id)
         # Texture
         self.shader_program['u_texture_0'] = self.tex_id
         self.app.texture.textures[self.tex_id].use(location=self.tex_id)
@@ -96,7 +77,13 @@ class Cube:
 
     def render_shadow(self):
         self.shadow_program['m_proj'].write(self.app.camera.m_proj)
-        self.shadow_program['m_view_light'].write(self.app.light.m_view_light)
+        self.shadow_program['m_view_light'].write(self.app.global_light.m_view_light)
+        self.shadow_program['m_model'].write(self.m_model)
+        self.shadow_vao.render()
+
+    def render_shadow_2(self):
+        self.shadow_program['m_proj'].write(self.app.camera.m_proj)
+        self.shadow_program['m_view_light'].write(self.app.camera_light.m_view_light)
         self.shadow_program['m_model'].write(self.m_model)
         self.shadow_vao.render()
 
@@ -106,7 +93,6 @@ class Cube:
         self.shader_program.release()
         self.shadow_program.release()
         self.vbo.release()
-        # self.shadow_vbo.release()
 
     def get_vao(self):
         vao = self.ctx.vertex_array(self.shader_program, [

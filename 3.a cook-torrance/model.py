@@ -8,16 +8,16 @@ def generate_vertex_data(vertices, indices):
 
 
 class Cube:
-    def __init__(self, app, albedo=(0.9, 0.1, 0.1), diffuse=0.8, specular=1.0,
-                 ao: float = 1.0, position=(0, 0, 0), size=(0.5, 0.5, 0.5),
-                 texture: str = 'crate_0'):
+    def __init__(self, app, albedo=(0.9, 0.1, 0.1),
+                 metallic: float = 0.0, roughness: float = 0.0, ao: float = 1.0,
+                 position=(0, 0, 0), size=(0.5, 0.5, 0.5), texture: str = 'crate_0'):
         self.app = app
         self.ctx = app.ctx
-        self.size = size
         self.position = glm.mat4(glm.translate(glm.mat4(1), glm.vec3(position)))
-        self.albedo = 0.06 * glm.vec3(albedo)  # Ambient (Albedo)
-        self.diffuse = diffuse * glm.vec3(albedo)  # Diffuse (Lambert)
-        self.specular = specular * glm.vec3(albedo)  # Specular (Blinn-Phong)
+        self.size = size
+        self.albedo = glm.vec3(albedo)
+        self.metallic = metallic
+        self.roughness = roughness
         self.ao = ao
 
         self.vbo = self.get_vbo()
@@ -28,14 +28,14 @@ class Cube:
         self.shadow_program = app.shader.get_shader('shadow')
         self.shadow_vao = self.get_shadow_vao()
 
-        self.tex_id = app.texture.get_texture(path=f'textures/{texture}.png')
+        self.tex_id = app.texture.get_texture(path=f'./../textures/{texture}.png')
         self.depth_tex_id = app.shadow.depth_tex_id
         self.m_model = self.position
         self.on_init()
 
     def on_init(self):
         # Set resolution
-        # self.shader_program['u_resolution'].write(glm.vec2(self.app.win_size))
+        self.shader_program['u_resolution'].write(glm.vec2(self.app.win_size))
         # n lights
         self.shader_program['num_lights'].value = len(self.app.lights)
         # Send lights into uniform array of Light struct
@@ -47,18 +47,17 @@ class Cube:
         # Position
         self.shader_program['m_proj'].write(self.app.camera.m_proj)
         self.shader_program['m_view'].write(self.app.camera.m_view)
-        self.shader_program['m_model'].write(self.m_model)
-        # Material: Albedo (rgb)
+        self.shader_program['m_model'].write(self.position)
+        # Material: Albedo (rgb), metallic, rough, ao
         self.shader_program['material.Ka'].value = self.albedo
-        self.shader_program['material.Kd'].value = self.diffuse
-        self.shader_program['material.Ks'].value = self.specular
+        self.shader_program['material.Km'].value = self.metallic
+        self.shader_program['material.Kr'].value = self.roughness
         self.shader_program['material.Kao'].value = self.ao
         # Shadow depth map
         self.shader_program['u_shadow_map'] = self.depth_tex_id
         self.app.texture.textures[self.depth_tex_id].use(location=self.depth_tex_id)
-        # Texture
-        self.shader_program['u_texture_0'] = self.tex_id
-        self.app.texture.textures[self.tex_id].use(location=self.tex_id)
+        # Camera
+        self.shader_program['camPos'].write = self.app.camera.position
         # Shadow program
         self.shadow_program['m_proj'].write(self.app.camera.m_proj)
         self.shadow_program['m_view_light'].write(self.app.light.m_view_light)
@@ -80,14 +79,16 @@ class Cube:
         self.shader_program['m_proj'].write(self.app.camera.m_proj)
         self.shader_program['m_view'].write(self.app.camera.m_view)
         self.shader_program['m_model'].write(self.m_model)
-        # Material: Albedo (rgb)
+        # Material: Albedo (rgb), metallic, rough, ao
         self.shader_program['material.Ka'].value = self.albedo
-        self.shader_program['material.Kd'].value = self.diffuse
-        self.shader_program['material.Ks'].value = self.specular
+        self.shader_program['material.Km'].value = self.metallic
+        self.shader_program['material.Kr'].value = self.roughness
         self.shader_program['material.Kao'].value = self.ao
         # Shadow depth map
         self.shader_program['u_shadow_map'] = self.depth_tex_id
         self.app.texture.textures[self.depth_tex_id].use(location=self.depth_tex_id)
+        # Camera
+        self.shader_program['camPos'].write = self.app.camera.position
         # Texture
         self.shader_program['u_texture_0'] = self.tex_id
         self.app.texture.textures[self.tex_id].use(location=self.tex_id)
@@ -158,7 +159,7 @@ class Cube:
             (0, 1, 0) * 6,
             (0, -1, 0) * 6,
         ]
-        normals = numpy.array(normals, dtype='f4').reshape(int(len(normals * 6)), 3)
+        normals = numpy.array(normals, dtype='f4').reshape(36, 3)
         vertex_data = numpy.hstack([vertex_data, normals])
 
         return numpy.array(vertex_data, dtype='f4')
@@ -168,10 +169,12 @@ class Cube:
 
 
 class Floor(Cube):
-    def __init__(self, app, albedo=(0.9, 0.1, 0.1), diffuse=0.8, specular=1.0,
-                 ao: float = 1.0, position=(0, 0, 0), size=(0.5, 0.5, 0.5),
-                 texture: str = 'ground'):
-        super().__init__(app, albedo, diffuse, specular, ao, position, size, texture)
+    def __init__(self, app, albedo=(0.9, 0.1, 0.1),
+                 metallic: float = 0.0, roughness: float = 0.0, ao: float = 1.0,
+                 position=(0, 0, 0), size=(0.5, 0.5, 0.5), texture: str = 'ground'):
+        super().__init__(app, albedo, metallic, roughness, ao, position, size, texture)
 
     def update(self):
-        self.m_model = self.position
+        # m_model = glm.rotate(self.position, self.app.time, glm.vec3(0, 1, 0))
+        self.shader_program['m_view'].write(self.app.camera.m_view)
+        # self.shader_program['m_model'].write(m_model)

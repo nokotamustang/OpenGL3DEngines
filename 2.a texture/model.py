@@ -2,11 +2,6 @@ import glm
 import numpy
 
 
-def generate_vertex_data(vertices, indices):
-    data = [vertices[ind] for triangle in indices for ind in triangle]
-    return numpy.array(data, dtype='f4')
-
-
 class Cube:
     def __init__(self, app, albedo=(0.9, 0.1, 0.1), diffuse=0.8, specular=1.0,
                  ao: float = 1.0, position=(0, 0, 0), size=(0.5, 0.5, 0.5),
@@ -19,23 +14,15 @@ class Cube:
         self.diffuse = diffuse * glm.vec3(albedo)  # Diffuse (Lambert)
         self.specular = specular * glm.vec3(albedo)  # Specular (Blinn-Phong)
         self.ao = ao
-
         self.vbo = self.get_vbo()
-        self.shader_program = app.shader.get_shader('default')
+        self.shader_program = self.get_shader_program()
         self.vao = self.get_vao()
-
-        # self.shadow_vbo = self.get_vbo()
-        self.shadow_program = app.shader.get_shader('shadow')
-        self.shadow_vao = self.get_shadow_vao()
-
-        self.tex_id = app.texture.get_texture(path=f'textures/{texture}.png')
-        self.depth_tex_id = app.shadow.depth_tex_id
-        self.m_model = self.position
+        self.tex_id = app.texture.get_texture(path=f'./../textures/{texture}.png')
         self.on_init()
 
     def on_init(self):
-        # Set resolution
-        # self.shader_program['u_resolution'].write(glm.vec2(self.app.win_size))
+        # Texture
+        self.shader_program['u_texture_0'] = self.tex_id
         # n lights
         self.shader_program['num_lights'].value = len(self.app.lights)
         # Send lights into uniform array of Light struct
@@ -43,83 +30,37 @@ class Cube:
             self.shader_program[f'lights[{i}].position'].value = light.position
             self.shader_program[f'lights[{i}].color'].value = light.color
             self.shader_program[f'lights[{i}].strength'].value = light.strength
-        self.shader_program['m_view_light'].write(self.app.light.m_view_light)
         # Position
         self.shader_program['m_proj'].write(self.app.camera.m_proj)
         self.shader_program['m_view'].write(self.app.camera.m_view)
-        self.shader_program['m_model'].write(self.m_model)
+        self.shader_program['m_model'].write(self.position)
         # Material: Albedo (rgb)
         self.shader_program['material.Ka'].value = self.albedo
         self.shader_program['material.Kd'].value = self.diffuse
         self.shader_program['material.Ks'].value = self.specular
         self.shader_program['material.Kao'].value = self.ao
-        # Shadow depth map
-        self.shader_program['u_shadow_map'] = self.depth_tex_id
-        self.app.texture.textures[self.depth_tex_id].use(location=self.depth_tex_id)
-        # Texture
-        self.shader_program['u_texture_0'] = self.tex_id
-        self.app.texture.textures[self.tex_id].use(location=self.tex_id)
-        # Shadow program
-        self.shadow_program['m_proj'].write(self.app.camera.m_proj)
-        self.shadow_program['m_view_light'].write(self.app.light.m_view_light)
-        self.shadow_program['m_model'].write(self.m_model)
+        # Camera
+        # self.shader_program['camPos'].write = self.app.camera.position
 
     def update(self):
-        self.m_model = glm.rotate(self.position, self.app.time, glm.vec3(0, 1, 0))
+        m_model = glm.rotate(self.position, self.app.time, glm.vec3(0, 1, 0))
+        self.shader_program['m_view'].write(self.app.camera.m_view)
+        self.shader_program['m_model'].write(m_model)
+        # self.shader_program['camPos'].write = self.app.camera.position
 
     def render(self):
-        # n lights
-        self.shader_program['num_lights'].value = len(self.app.lights)
-        # Send lights into uniform array of Light struct
-        for i, light in enumerate(self.app.lights):
-            self.shader_program[f'lights[{i}].position'].value = light.position
-            self.shader_program[f'lights[{i}].color'].value = light.color
-            self.shader_program[f'lights[{i}].strength'].value = light.strength
-        self.shader_program['m_view_light'].write(self.app.light.m_view_light)
-        # Position
-        self.shader_program['m_proj'].write(self.app.camera.m_proj)
-        self.shader_program['m_view'].write(self.app.camera.m_view)
-        self.shader_program['m_model'].write(self.m_model)
-        # Material: Albedo (rgb)
-        self.shader_program['material.Ka'].value = self.albedo
-        self.shader_program['material.Kd'].value = self.diffuse
-        self.shader_program['material.Ks'].value = self.specular
-        self.shader_program['material.Kao'].value = self.ao
-        # Shadow depth map
-        self.shader_program['u_shadow_map'] = self.depth_tex_id
-        self.app.texture.textures[self.depth_tex_id].use(location=self.depth_tex_id)
-        # Texture
-        self.shader_program['u_texture_0'] = self.tex_id
         self.app.texture.textures[self.tex_id].use(location=self.tex_id)
-        # Render
         self.vao.render()
 
-    def render_shadow(self):
-        self.shadow_program['m_proj'].write(self.app.camera.m_proj)
-        self.shadow_program['m_view_light'].write(self.app.light.m_view_light)
-        self.shadow_program['m_model'].write(self.m_model)
-        self.shadow_vao.render()
-
     def destroy(self):
-        self.vao.release()
-        self.shadow_vao.release()
-        self.shader_program.release()
-        self.shadow_program.release()
         self.vbo.release()
-        # self.shadow_vbo.release()
+        self.shader_program.release()
+        self.vao.release()
 
     def get_vao(self):
         vao = self.ctx.vertex_array(self.shader_program, [
             (self.vbo, '2f 3f 3f', 'in_texcoord_0', 'in_position', 'in_normal'),
         ])
-        return vao
-
-    def get_shadow_vao(self):
-        vao = self.ctx.vertex_array(self.shadow_program, [
-            (self.vbo, '2f 3f 3f', 'in_texcoord_0', 'in_position', 'in_normal'),
-        ], skip_errors=True)
-        # Temporary fix for the issue with the shadow program because we are not using texture coordinates
-        # So we set skip_errors=True to ignore the missing in_texcoord_0 attribute
         return vao
 
     def get_vertex_data(self, size=(0.5, 0.5, 0.5)):
@@ -136,7 +77,7 @@ class Cube:
             (3, 7, 4), (3, 2, 7),
             (0, 6, 1), (0, 5, 6),
         ]
-        vertex_data = generate_vertex_data(vertices, indices)
+        vertex_data = self.generate_vertex_data(vertices, indices)
 
         # Texture coordinates
         texture_coords = [(0, 0), (1, 0), (1, 1), (0, 1)]
@@ -146,7 +87,7 @@ class Cube:
                            (2, 3, 0), (2, 0, 1),
                            (0, 2, 3), (0, 1, 2),
                            (3, 1, 2), (3, 0, 1)]
-        texture_coord_data = generate_vertex_data(texture_coords, texture_indices)
+        texture_coord_data = self.generate_vertex_data(texture_coords, texture_indices)
         vertex_data = numpy.hstack([texture_coord_data, vertex_data])
 
         # Normals
@@ -163,8 +104,24 @@ class Cube:
 
         return numpy.array(vertex_data, dtype='f4')
 
+    @staticmethod
+    def generate_vertex_data(vertices, indices):
+        data = [vertices[ind] for triangle in indices for ind in triangle]
+        return numpy.array(data, dtype='f4')
+
     def get_vbo(self):
         return self.ctx.buffer(self.get_vertex_data(size=self.size))
+
+    def get_shader_program(self, shader_name='default'):
+        with open(f'{self.app.base_path}/{shader_name}.vert', 'r') as f:
+            vertex_shader_source = f.read()
+        with open(f'{self.app.base_path}/{shader_name}.frag', 'r') as f:
+            fragment_shader_source = f.read()
+        shader_program = self.ctx.program(
+            vertex_shader=vertex_shader_source,
+            fragment_shader=fragment_shader_source,
+        )
+        return shader_program
 
 
 class Floor(Cube):
@@ -174,4 +131,6 @@ class Floor(Cube):
         super().__init__(app, albedo, diffuse, specular, ao, position, size, texture)
 
     def update(self):
-        self.m_model = self.position
+        # m_model = glm.rotate(self.position, self.app.time, glm.vec3(0, 1, 0))
+        self.shader_program['m_view'].write(self.app.camera.m_view)
+        # self.shader_program['m_model'].write(m_model)

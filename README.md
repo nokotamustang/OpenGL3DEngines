@@ -44,11 +44,17 @@ General keys in the examples:
 -   `WASD` - [Forward, Left, Backward, Right] flying camera movement
 -   `Mouse Move` - camera look movement
 
-## 1.a cube - Cube with Lambert Diffusion & Blinn-Phong Specular lighting
+## 1.a brdf blinn-phong - Blinn-Phong
 
-This is a basic example creating a 3D mesh from scratch and applying a simple shader program to it. The shader program is a combination of Lambert Diffusion and Blinn-Phong Specular lighting models.
+A _bidirectional reflectance distribution function_ is a function of four real variables that defines how light from a source is reflected off an opaque surface. As I understand it, _Physically Based Rendering_ (PBR) arrived much later and focuess more on realisitc physical properties, rather than a more artistic approach from Blinn-Phong. Blinn's model is an approximator of Phong shading, which was often commeted to look like 'plastic'.
 
-![Screenshots](./screenshots/mgl_cube1.PNG)
+This example creates a 3D mesh from scratch and applying a BRDF shader program to render the illuminsation model described by the _Blinn-Phong_ model from 1975.
+
+The physical model simulates the way light interacts with materials. This includes models for diffuse reflection, specular reflection, and transmission. These models are based on the physical properties of materials, such as their reflectance, roughness, and index of refraction.
+
+Therefore, in Blinn-Phong, each material has a set of properties that include the albedo, roughness, and metallic value. The albedo is the base color of the material, the roughness is how rough or smooth the material is, the metallic is how metallic or non-metallic the material is, and the normal map is a texture that simulates surface detail.
+
+![Screenshots](./screenshots/mgl_blinn1.PNG)
 
 Because we communicate with the GPU using OpenGL under the hood, we need to send data to the GPU in the form of buffers. We create a Vertex Buffer Object (VBO) to store the vertices, and an Element Buffer Object (EBO) to store the indices of the vertices that make up the triangles of the cube.
 
@@ -56,13 +62,13 @@ The shader program is a combination of a vertex shader and a fragment shader. Th
 
 Therefore learning to write code in parallel is essential for creating efficient graphics applications.
 
-## 1.b cube_2 - Anti-aliasing
+## 1.b ssaa - Super sampling anti-aliasing
 
 I added anti-aliasing with a sized up render buffer with 4 samples. This is considered to be 'SSAA' or 'Super-Sample Anti-Aliasing', and usually run slower than other methods but produces the best quality.
 
 Without anti-aliasing, the edges of the cube appear jagged because the pixels on the screen are square and the edges of the cube are not aligned with the pixels. Anti-aliasing smooths out the edges of the cube by blending the colors of the pixels along the edges.
 
-![Screenshots](./screenshots/mgl_cube2.PNG)
+![Screenshots](./screenshots/mgl_ssaa1.PNG)
 
 The basic principle of SSAA is to render the scene at a higher resolution and then down-sample it to the screen resolution. In MGL this is done by rendering the scene to a render buffer with a higher resolution than the screen, and then down-sampling it to the screen resolution using a **blit** from the render buffer to the screen buffer.
 
@@ -74,22 +80,22 @@ FXAA is a post-processing anti-aliasing technique that is applied to the final i
 
 TAA is a temporal anti-aliasing technique that uses information from previous frames to smooth out the edges by blending pixel information. It is considered to produce average results with a lot of blurring, but computationally cheaper than other methods.
 
-## 2.a cubes - Cubes + textures
+## 2.a texture - texture map
 
 This example adds more cubes to the scene and applies a texture to each cube. The texture is a 2D image that is mapped to the surface of the cube using texture coordinates. The texture coordinates are stored in the VBO along with the vertices of the cube.
 
-![Screenshots](./screenshots/mgl_cubes1.PNG)
+![Screenshots](./screenshots/mgl_texture1.PNG)
 
 With basic illumination applied in addition to the texture the scene is starting to look more realistic. The floor is a grid of cubes to illustrate how to create a large scene with many objects. However, this is usually considered inefficient because each cube is a separate draw call to the GPU; whereas for a floor only the top faces of the cubes are visible. More on this later.
 
-## 2.b cubes_2 - Cubes + textures + shadows
+## 2.b shadow - shadow map
 
-A Shadow casting system is added to the cubes demo; this example also re-uses shaders and therefore shader program values are set for each object before rendering.
+A shadow map casting system is added to the cubes demo; this example also re-uses shaders and therefore shader program values are set for each object before rendering.
 
-![Screenshots](./screenshots/mgl_cubes2.PNG)
+![Screenshots](./screenshots/mgl_shadow1.PNG)
 _Note the cubes are floating, not sitting on the ground._
 
-A two pass rendering system is used to create shadows in the scene. The first pass renders the scene from the perspective of the light source to create a shadow map. The second pass renders the scene from the perspective of the camera and uses the shadow map to determine if a pixel is in shadow or not.
+A two pass rendering system is used to create shadows in the scene. The first pass renders the scene from the perspective of the light source to create a shadow map. The second pass renders the scene from the perspective of the camera and uses the shadow map to determine if a pixel is in shadow or not. This is a standard approach to rending shadows: <https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/>.
 
 A shadow map is a depth buffer that is rendered from the perspective of the light source. The depth buffer is then used to determine if a pixel on the cube is in shadow or not. If the pixel is in shadow, it is darkened; if it is not in shadow, it is illuminated.
 
@@ -97,19 +103,17 @@ OpenGL is efficient and has some tools that compute some of these factors on the
 
 In an ideal situation, we would send all data in matrices to the shader, and then render all objects in one go with minimal value changes to the shader program.
 
-Additionally, this uses a single shadow map for all objects in the scene i.e. only one light direction is modelled. Some changes are needed to support shadows from multiple light sources.
+The caveat of this approach is a shadow map is needed per loght source that you want to model. I create a global light (the sun) with a shadow map for it and I create a second shadow map for a flash light positioned from the camera. Press `f` to toggle this light source. Press `f2` to toggle the global light source.
 
-## 3.a pbr - Physically based rendering + Shadows
+I created a debug view that shows the lights in a really weired way, press `f4` to toggle, and the `mouse wheel` will add or remove ambient lighting to the scene.
 
-Physically Based Rendering (PBR) is a rendering technique that simulates the way light interacts with materials in the real world. It is based on the physics of light and materials, and it is used to create realistic lighting and shading effects in 3D graphics.
+## 3.a cook-torrance - Cook-Torrance
 
-![Screenshots](./screenshots/mgl_pbr1.PNG)
+In 1982, Robert Cook and Kenneth Torrance published a reflectance model that is claimed to more accurately represent the physical reality of light compared to others such as the Blinn-Phong model.
 
-The basic idea behind PBR is to use physically accurate models to simulate the way light interacts with materials. This includes models for diffuse reflection, specular reflection, and transmission. These models are based on the physical properties of materials, such as their reflectance, roughness, and index of refraction.
+![Screenshots](./screenshots/mgl_cook1.PNG)
 
-Therefore each material has a set of properties that describe how it interacts with light. These properties include the albedo, roughness, and metallic value. The albedo is the base color of the material, the roughness is how rough or smooth the material is, the metallic is how metallic or non-metallic the material is, and the normal map is a texture that simulates surface detail.
-
-We can assign these properties to each cube in the scene, and then use a PBR shader to render the cubes with realistic lighting and shading effects. The PBR shader uses the properties of the material to calculate the color of each pixel on the cube, with the properties of the light sources in the scene and produces a more realistic effect as the light interacts with the material.
+For more realisim, the computation of the BRDF is more complex.
 
 ## 4.a grass - Grass rendering
 

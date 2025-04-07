@@ -92,14 +92,31 @@ class Camera:
 class Light:
     def __init__(self, position=(10, 10, -10), color=(1, 1, 1), strength=1.0):
         self.position = glm.vec3(position)
-        self.color = glm.vec3(color)
         self.direction = glm.vec3(0, 0, 0)
+        self.color = glm.vec3(color)
         self.strength = strength
-        # View matrix
-        self.m_view_light = self.get_view_matrix()
+        self.m_view_light = self.get_view_matrix()  # View matrix
 
     def get_view_matrix(self):
         return glm.lookAt(self.position, self.direction, glm.vec3(0, 1, 0))
+
+
+class CameraLight:
+    camera = None
+
+    def __init__(self, camera=None, color=(1, 1, 1), strength=1.0):
+        self.camera = camera
+        self.position = glm.vec3(camera.position)
+        self.color = glm.vec3(color)
+        self.strength = strength
+        self.m_view_light = self.get_view_matrix()
+
+    def get_view_matrix(self):
+        return glm.lookAt(self.position - self.camera.forward, self.position, glm.vec3(0, 1, 0))
+
+    def update(self):
+        self.position = self.camera.position
+        self.m_view_light = self.get_view_matrix()
 
 
 class Shader():
@@ -178,6 +195,7 @@ class Texture:
     def get_depth_texture(self, size, name='depth_texture'):
         if name in self.texture_map:
             return self.texture_map[name]
+        # Depth texture is slower than a depth buffer, but you can sample it later on
         depth_texture = self.ctx.depth_texture(size=size)
         # Remove repetition
         depth_texture.repeat_x = False
@@ -214,12 +232,27 @@ class Shadow():
         self.ctx = app.ctx
 
         # Using a texture here not a renderbuffer because we pass it to the shader
-        self.depth_tex_id = self.app.texture.get_depth_texture(self.app.win_size)
+        self.depth_tex_id = self.app.texture.get_depth_texture(self.app.win_size,
+                                                               name='depth_texture')
         self.depth_texture = self.app.texture.textures[self.depth_tex_id]
         # self.depth_buffer = self.ctx.depth_renderbuffer(size=self.app.win_size)
 
         self.depth_fbo = self.ctx.framebuffer(depth_attachment=self.depth_texture)
         # self.depth_fbo = self.ctx.framebuffer(depth_attachment=self.depth_buffer)
+
+    def destroy(self):
+        self.depth_fbo.release()
+        self.depth_texture.release()
+
+
+class Shadow2():
+    def __init__(self, app):
+        self.app = app
+        self.ctx = app.ctx
+        self.depth_tex_id = self.app.texture.get_depth_texture(self.app.win_size,
+                                                               name='depth_texture_2')
+        self.depth_texture = self.app.texture.textures[self.depth_tex_id]
+        self.depth_fbo = self.ctx.framebuffer(depth_attachment=self.depth_texture)
 
     def destroy(self):
         self.depth_fbo.release()
