@@ -54,7 +54,7 @@ The physical model simulates the way light interacts with materials. This includ
 
 Therefore, in Blinn-Phong, each material has a set of properties that include the albedo, roughness, and metallic value. The albedo is the base color of the material, the roughness is how rough or smooth the material is, the metallic is how metallic or non-metallic the material is, and the normal map is a texture that simulates surface detail.
 
-![Screenshots](./screenshots/mgl_blinn1.PNG)
+![Screenshots](./screenshots/mgl_blinn1.png)
 
 Because we communicate with the GPU using OpenGL under the hood, we need to send data to the GPU in the form of buffers. We create a Vertex Buffer Object (VBO) to store the vertices, and an Element Buffer Object (EBO) to store the indices of the vertices that make up the triangles of the cube.
 
@@ -68,7 +68,7 @@ I added anti-aliasing with a sized up render buffer with 4 samples. This is cons
 
 Without anti-aliasing, the edges of the cube appear jagged because the pixels on the screen are square and the edges of the cube are not aligned with the pixels. Anti-aliasing smooths out the edges of the cube by blending the colors of the pixels along the edges.
 
-![Screenshots](./screenshots/mgl_ssaa1.PNG)
+![Screenshots](./screenshots/mgl_ssaa1.png)
 
 The basic principle of SSAA is to render the scene at a higher resolution and then down-sample it to the screen resolution. In MGL this is done by rendering the scene to a render buffer with a higher resolution than the screen, and then down-sampling it to the screen resolution using a **blit** from the render buffer to the screen buffer.
 
@@ -84,7 +84,7 @@ TAA is a temporal anti-aliasing technique that uses information from previous fr
 
 This example adds more cubes to the scene and applies a texture to each cube. The texture is a 2D image that is mapped to the surface of the cube using texture coordinates. The texture coordinates are stored in the VBO along with the vertices of the cube.
 
-![Screenshots](./screenshots/mgl_texture1.PNG)
+![Screenshots](./screenshots/mgl_texture1.png)
 
 With basic illumination applied in addition to the texture the scene is starting to look more realistic. The floor is a grid of cubes to illustrate how to create a large scene with many objects. However, this is usually considered inefficient because each cube is a separate draw call to the GPU; whereas for a floor only the top faces of the cubes are visible. More on this later.
 
@@ -92,7 +92,7 @@ With basic illumination applied in addition to the texture the scene is starting
 
 A shadow map casting system is added to the cubes demo; this example also re-uses shaders and therefore shader program values are set for each object before rendering.
 
-![Screenshots](./screenshots/mgl_shadow1.PNG)
+![Screenshots](./screenshots/mgl_shadow1.png)
 _Note the cubes are floating, not sitting on the ground._
 
 A two pass rendering system is used to create shadows in the scene. The first pass renders the scene from the perspective of the light source to create a shadow map. The second pass renders the scene from the perspective of the camera and uses the shadow map to determine if a pixel is in shadow or not. This is a standard approach to rending shadows: <https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/>.
@@ -111,7 +111,7 @@ I created a debug view that shows the lights in a really weired way, press `f4` 
 
 In 1982, Robert Cook and Kenneth Torrance published a reflectance model that is claimed to more accurately represent the physical reality of light compared to others such as the Blinn-Phong model.
 
-![Screenshots](./screenshots/mgl_cook1.PNG)
+![Screenshots](./screenshots/mgl_cook1.png)
 
 For more realisim, the computation of the BRDF is more complex.
 
@@ -119,7 +119,7 @@ For more realisim, the computation of the BRDF is more complex.
 
 As we have explored shader programs and how they can be used to render 3D objects, we can use them to render more complex objects such as grass. Grass in complex scenes isn't modelled from a 3D mesh, but rather a series of 2D planes called 'billboards'.
 
-![Screenshots](./screenshots/mgl_grass1.PNG)
+![Screenshots](./screenshots/mgl_grass1.png)
 
 Starting from the tutorial: <https://vulpinii.github.io/tutorials/grass-modelisation/en/> and <https://developer.nvidia.com/gpugems/gpugems/part-i-natural-effects/chapter-7-rendering-countless-blades-waving-grass>.
 
@@ -135,7 +135,7 @@ Some more info on flow maps: <https://github.com/JaccomoLorenz/godot-flow-map-sh
 
 Expanding on the grass rendering to use a texture atlas for the grass rendering. This is a more efficient way to store multiple textures in a single texture.
 
-![Screenshots](./screenshots/mgl_grass2.PNG)
+![Screenshots](./screenshots/mgl_grass2.png)
 
 A texture atlas is a single texture that contains multiple textures. This is useful for rendering multiple objects with different textures in a single draw call. In this example, we use a texture atlas to store multiple grass textures in a 4x4 grid, and then use a shader program to select the correct texture for each grass blade.
 
@@ -145,7 +145,7 @@ In this example, the indexing is manually stated in the geom shader. However in 
 
 I create a simple ground plane from a mathematical function, to form a grid of vertices which are divided into quads; and then two triangles per quad for texturing. The texture is a 2D image that is mapped to the surface of the ground plane using texture coordinates. The texture coordinates are stored in the VBO along with the vertices of the ground plane.
 
-![Screenshots](./screenshots/mgl_ground1.PNG)
+![Screenshots](./screenshots/mgl_ground1.png)
 
 This, mentally, isn't far more complex than the cube example, but we need to understand how to create a large area efficiently and produce the relationship between the vertices and the pairs of triangles forming the ground plane.
 
@@ -153,7 +153,7 @@ This, mentally, isn't far more complex than the cube example, but we need to und
 
 Rendering a simple ground plane with a texture and a height map from an image.
 
-![Screenshots](./screenshots/mgl_ground2.PNG)
+![Screenshots](./screenshots/mgl_ground2.png)
 
 In practice, the height map could be procedurally generated or loaded from an image file. The height map is used to displace the vertices of the ground plane in the vertex shader, and this creates the effect of a 3D ground plane.
 
@@ -161,7 +161,7 @@ In practice, the height map could be procedurally generated or loaded from an im
 
 I've combined several techniques to render the ground plane with a height map, and calculating normals for lighting. I added a global lighting model, and adding our local lights to the scene; and added a skybox.
 
-![Screenshots](./screenshots/mgl_ground3.PNG)
+![Screenshots](./screenshots/mgl_ground3.png)
 
 This is a complex example that combines several techniques to render a realistic scene. The ground plane is created from a height map and displaced in the vertex shader. The normals of the ground plane are calculated in the geometry shader and passed to the fragment shader for lighting calculations.
 
