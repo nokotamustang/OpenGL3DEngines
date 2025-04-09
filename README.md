@@ -103,9 +103,9 @@ OpenGL is efficient and has some tools that compute some of these factors on the
 
 In an ideal situation, we would send all data in matrices to the shader, and then render all objects in one go with minimal value changes to the shader program.
 
-The caveat of this approach is a shadow map is needed per loght source that you want to model. I create a global light (the sun) with a shadow map for it and I create a second shadow map for a flash light positioned from the camera. Press `f` to toggle this light source. Press `f2` to toggle the global light source.
+The caveat of this approach is a shadow map is needed per light source that you want to model. I create a global light (the sun) with a shadow map for it and I create a second shadow map for a flash light positioned from the camera. Press `f` to toggle this light source. Press `f2` to toggle the global light source.
 
-I created a debug view that shows the lights in a really weired way, press `f4` to toggle, and the `mouse wheel` will add or remove ambient lighting to the scene.
+I created a debug view that shows the lights in a really weird way, press `f4` to toggle, and the `mouse wheel` will add or remove ambient lighting to the scene.
 
 ## 3.a cook-torrance - Cook-Torrance
 
@@ -113,7 +113,7 @@ In 1982, Robert Cook and Kenneth Torrance published a reflectance model that is 
 
 ![Screenshots](./screenshots/mgl_cook1.png)
 
-For more realisim, the computation of the BRDF is more complex.
+For more realism, the computation of the BRDF is more complex.
 
 ## 4.a grass - Grass rendering
 
