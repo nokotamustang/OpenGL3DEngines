@@ -46,9 +46,9 @@ General keys in the examples:
 
 ## 1.a brdf blinn-phong - Blinn-Phong
 
-A _bidirectional reflectance distribution function_ is a function of four real variables that defines how light from a source is reflected off an opaque surface. As I understand it, _Physically Based Rendering_ (PBR) arrived much later and focuess more on realisitc physical properties, rather than a more artistic approach from Blinn-Phong. Blinn's model is an approximator of Phong shading, which was often commeted to look like 'plastic'.
+A _bidirectional reflectance distribution function_ is a function of four real variables that defines how light from a source is reflected off an opaque surface. As I understand it, _Physically Based Rendering_ (PBR) arrived much later and focuses more on realistic physical properties, rather than a more artistic approach from Blinn-Phong. Blinn's model is an approximate of Phong shading, which was often commented to look like 'plastic'.
 
-This example creates a 3D mesh from scratch and applying a BRDF shader program to render the illuminsation model described by the _Blinn-Phong_ model from 1975.
+This example creates a 3D mesh from scratch and applying a BRDF shader program to render the illumination model described by the _Blinn-Phong_ model from 1975.
 
 The physical model simulates the way light interacts with materials. This includes models for diffuse reflection, specular reflection, and transmission. These models are based on the physical properties of materials, such as their reflectance, roughness, and index of refraction.
 

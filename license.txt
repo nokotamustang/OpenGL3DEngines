@@ -1,0 +1,27 @@
+﻿Copyright (c) 2025 Charles Mallah
+
+All rights and copyrights remain reserved to the copyright author(s) and owner.
+This applies to all code, object code, images, audio and music, documentation;
+in other words all content packaged herein with this notice, and all future
+official patches and updates.
+
+This software is provided 'as-is', without any express or implied warranty.
+
+In no event will the author(s) be held liable for any damages arising from the
+use of this software.
+
+Permission is granted to screen-capture, or audio-video record the game software
+within fair-use and with the following instructions:
+
+  - For the purpose of a 'first impressions' preview, a review, a full or partial
+    play-through or a walk-through (such as a let's play or long play), and
+    streaming of game-play content.
+
+  - This is regardless of personal or commercial purposes.
+
+  - This includes the inclusion of all visual and audio (sounds effects and music)
+    elements presented in the release version of this game.
+
+  - This is providing that the respective author(s) do not claim ownership for the
+    original content of the game, and provide a clear reference to the game and
+    music content to the copyright owner.
