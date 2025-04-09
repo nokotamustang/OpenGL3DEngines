@@ -1,22 +1,22 @@
-# Python 3D Rendering Engines
+# OpenGL 3D Rendering
 
-An exploration of 3D engines and rendering in Python by `Nokota Mustang`.
+An exploration of 3D rendering in OpenGL by `Nokota Mustang`.
 
 Computer graphics is a vast field, and I am interested in learning more about the rendering process and the mathematics behind it. Having a good grasp of realtime graphics, data structures, and algorithms is essential for game development, simulations, and visualizations. I've completed 2D game projects before, but I want to learn more about 3D graphics and rendering.
 
 There is a lot of crossover to modern App development, and the skills learned here can be applied to AR/VR, simulations, and data visualization. In addition data processing and machine learning can benefit from the parallel processing capabilities of the GPU; so learning about graphics rendering is a good investment of time.
 
-Opengl is a low-level graphics API that can be used to create 3D graphics, but it is quite complex and requires a lot of boilerplate code to get started. ModernGL is a Python wrapper around OpenGL that simplifies the process of creating 3D graphics.
+Opengl is a low-level graphics API that can be used to create 3D graphics, but it is quite complex and requires a lot of boilerplate code to get started.
 
 There are several very detailed books about graphics rendering, but when it comes to creating real-time graphics with interactive applications, there is a complex balance between performance and quality. This means there are several ideas and solutions to some of the same problems, but the issue becomes how to combine multiple techniques to create a coherent and efficient system.
 
 When exploring a game engine the low level rendering process is abstracted away, and an assortment of tools and features are provided, which also sometimes carries code-bloat and performance overhead. The bigger the engine, the more features and tools are available, but the more complex and harder to learn it becomes; such in the case of 'Unity' or 'Unreal Engine'.
 
-Therefore to learn how to approach graphics from a first-principles perspective, I will be exploring Python based rendering engines. Why Python? Because it is a high-level language that is easy to learn and use, and it is also a language that I am familiar with and it's one of the most powerful and popular tools out there today.
-
-Each project is a standalone example of a 3D rendering technique or feature working with Python 3.12. Some projects are combined to create a more complex scene. Each project is a self-contained example that can be run independently.
+Therefore to learn how to approach graphics from a first-principles perspective, I will be exploring Python and C++ based languages.
 
 `ModernGL and Pygame 3D demonstrations`
+
+Each project is a standalone example of a 3D rendering technique or feature working with Python 3.12. Some projects are combined to create a more complex scene. Each project is a self-contained example that can be run independently. ModernGL is a Python wrapper around OpenGL that simplifies the process of creating 3D graphics.
 
 ModernGL wraps OpenGL in Python and simplifies the process of creating 3D graphics by grouping tedious API calls into simpler logical routines. Pygame is a set of Python modules designed for writing video games. It includes computer graphics and sound libraries designed to be used with the Python programming language. This makes a perfect pair of libraries to create 3D graphics in Python. I will build a series of examples using ModernGL and Pygame to explore 3D rendering techniques, and eventually combine them to create a 3D game engine.
 
