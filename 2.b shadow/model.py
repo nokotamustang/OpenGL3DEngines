@@ -111,8 +111,14 @@ class Cube:
     def get_vertex_data(self, size=(0.5, 0.5, 0.5)):
         # Vertices
         vertices = [
-            (-size[0], -size[1], size[2]), (size[0], -size[1], size[2]), (size[0], size[1], size[2]), (-size[0], size[1], size[2]),
-            (-size[0], size[1], -size[2]), (-size[0], -size[1], -size[2]), (size[0], -size[1], -size[2]), (size[0], size[1], -size[2])
+            (-size[0], -size[1], size[2]),
+            (size[0], -size[1], size[2]),
+            (size[0], size[1], size[2]),
+            (-size[0], size[1], size[2]),
+            (-size[0], size[1], -size[2]),
+            (-size[0], -size[1], -size[2]),
+            (size[0], -size[1], -size[2]),
+            (size[0], size[1], -size[2])
         ]
         indices = [
             (0, 2, 3), (0, 1, 2),
